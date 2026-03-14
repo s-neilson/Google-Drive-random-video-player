@@ -1,0 +1,17 @@
+#The URL of the publicly accessible Google Drive folder you want to display videos from. Subfolders will be downloaded, but their contents will not played or deleted by the program.
+folderUrl:
+
+#How long in seconds the local files are resynchronized with the Google Drive folder.
+resynchronizationTime:
+
+#Whether local files that are no longer on the Google Drive folder will be deleted locally.
+deleteOldLocalFiles: false
+
+#Between the square brackets are the valid video file types to download, display and delete. Include the file extension with a preceeding period with a comma in between file types.
+videoFileTypes: []
+
+#Between the square brackets are the valid image file types to download, display and delete. Include the file extension with a preceeding period with a comma in between file types.
+imageFileTypes: []
+
+#How long in seconds the image file types specified in imageFileTypes are displayed for.
+imageDuration:
