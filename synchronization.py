@@ -81,13 +81,16 @@ def getVideosToChange(remoteFileListVideo):
   return fileNamesToDownload,fileNamesToDelete
 
 
-async def deleteOldLocalFiles(fileNamesToDelete,fileDeleteLock):
+async def deleteOldLocalFiles(fileNamesToDelete,fileDeleteLock,playedMedia):
   if(len(fileNamesToDelete)>0):
     async with fileDeleteLock: #Ensures that files are not deleted while a video is being played.
       print("Deleting old local files: ")
       for i in fileNamesToDelete:
         print("  Deleting "+i)
         os.remove(i)
+        
+        if(i in playedMedia):
+          playedMedia.remove(i)
     print("")
      
 
@@ -101,7 +104,7 @@ async def downloadVideos(fileNamesToDownload):
   print("")
 
 
-async def synchronizeFiles(fileDeleteLock):
+async def synchronizeFiles(fileDeleteLock,playedMedia):
   while True:
     print("Synchronizing files")
     createDownloadFolders()
@@ -109,10 +112,8 @@ async def synchronizeFiles(fileDeleteLock):
     videoFilesToDownload,videoFilesToDelete=getVideosToChange(remoteVideoList)
 
     await downloadVideos(videoFilesToDownload)
-    #downloadFunction=lambda : downloadVideos(videoFilesToDownload)
-    #await asyncio.get_running_loop().run_in_executor(None,downloadFunction)
 
-    await deleteOldLocalFiles(videoFilesToDelete,fileDeleteLock)
+    await deleteOldLocalFiles(videoFilesToDelete,fileDeleteLock,playedMedia)
     print("")
 
     await asyncio.sleep(getResynchronizationTime()) #A specified time is waited before resynchonizing again.

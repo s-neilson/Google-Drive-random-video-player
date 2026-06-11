@@ -15,3 +15,8 @@ imageFileTypes: []
 
 #How long in seconds the image file types specified in imageFileTypes are displayed for.
 imageDuration:
+
+#If this is true a list will be created containing the media that has already been played. Media will not play if it 
+#is already in this list; if there is nothing more to play then the list will be deleted and the process will start
+#again from the beginning.
+tryToNotRepeat:

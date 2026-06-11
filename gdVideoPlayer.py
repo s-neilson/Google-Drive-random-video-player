@@ -1,12 +1,12 @@
 import os
 import asyncio
 import random
-from configurationFunctions import displayConfiguration,getImageFileTypes,getImageDuration
+from configurationFunctions import displayConfiguration,getImageFileTypes,getImageDuration,getTryNotToRepeat
 from synchronization import synchronizeFiles,getListOfLocalFiles
 
 
 
-async def playRandomVideo(fileDeleteLock):
+async def playRandomVideo(fileDeleteLock,playedMedia):
   while True:
     async with fileDeleteLock: #Ensures that videos are not played while files are being deleted.
       videoList=getListOfLocalFiles()
@@ -15,8 +15,17 @@ async def playRandomVideo(fileDeleteLock):
         await asyncio.sleep(10) #Video playback will be tried again in 10 seconds.
         continue
 
-      randomVideoPath=random.choice(getListOfLocalFiles())
+      mediaToPlay=getListOfLocalFiles()
+      if(getTryNotToRepeat()):
+        mediaToPlay=list(set(getListOfLocalFiles()).difference(set(playedMedia)))
+        if(len(mediaToPlay)==0):
+          print("There is no more unplayed media, resetting list of played media")
+          playedMedia=[]
+          mediaToPlay=getListOfLocalFiles()
+        
+      randomVideoPath=random.choice(mediaToPlay)
       print("Now playing : "+randomVideoPath)
+      playedMedia.append(randomVideoPath)
 
       ffplayString=""
       fileExtension=os.path.splitext(randomVideoPath)[1]
@@ -33,10 +42,11 @@ async def playRandomVideo(fileDeleteLock):
 
 async def mainLoop():
   displayConfiguration()
+  playedMedia=[] #Holds a list of the media that has already been played.
 
   fileDeleteLock=asyncio.Lock() #This lock prevents the possibility of a file being deleted while it is being played.
-  videoDisplayTask=playRandomVideo(fileDeleteLock)
-  synchronizationTask=synchronizeFiles(fileDeleteLock)
+  videoDisplayTask=playRandomVideo(fileDeleteLock,playedMedia)
+  synchronizationTask=synchronizeFiles(fileDeleteLock,playedMedia)
   await asyncio.gather(videoDisplayTask,synchronizationTask)
 
 

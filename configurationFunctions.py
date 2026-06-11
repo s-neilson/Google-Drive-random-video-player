@@ -63,6 +63,10 @@ def getFileTypes():
 
 def getImageDuration():
   return getConfiguration()["imageDuration"]
+  
+  
+def getTryNotToRepeat():
+  return getConfiguration()["tryNotToRepeat"]
 
 
 def displayConfiguration():
@@ -86,4 +90,9 @@ def displayConfiguration():
 
   print("  Image duration: "+str(getImageDuration())+" seconds")
   print("")
+  
+  tryNotToRepeat=getTryNotToRepeat()
+  if(tryNotToRepeat):
+    print(" The program will attempt not to repeat media unless there is nothing more to play")
+    print("")
   
